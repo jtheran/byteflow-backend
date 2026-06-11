@@ -1,15 +1,18 @@
 import app from './app';
+import http from 'http';
 import config from './config/config'
 import { initializeDatabase } from './seed/seedBasic';
-
-//Iniciar Colas
+import { initSocketServer } from './config/socket.config';
 import './job/email.worker';
+import './job/wsp.worker';
+
+const server = http.createServer(app);
 
 const startServer = async () => {
     try {
       await initializeDatabase();
-
-      app.listen(config.PORT, () => {
+      initSocketServer(server);
+      server.listen(config.PORT, () => {
         console.log(`=================================`);
         console.log(` 🚀 ByteFlow Backend online`);
         console.log(` ⚡ Puerto: http://localhost:${config.PORT}`);

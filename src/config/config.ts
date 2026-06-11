@@ -26,7 +26,13 @@ const config = {
         SMTP_PORT: process.env.SMTP_PORT || "1025",
         SMTP_USER: process.env.SMTP_USER || "",
         SMTP_PASS: process.env.SMTP_PASS || "",
-        EMAIL_FROM: process.env.EMAIL_FROM || "ByteFlow <no-reply@byteflowpos.com" 
+        EMAIL_FROM: process.env.EMAIL_FROM || "ByteFlow <no-reply@byteflow.com" 
+    },
+
+    wsp: {
+        URL: process.env.WSP_API_URL || "http://localhost:2785/api",
+        KEY: process.env.WSP_API_KEY || "ByteForge2026",
+        SESSION_ID: process.env.WSP_SESSION_ID || ""
     },
     get databaseURL(){
         return  `postgresql://${this.postgres.username}:${this.postgres.password}@${this.postgres.host}:${this.postgres.port}/${this.postgres.database}?schema=public`;

@@ -29,8 +29,6 @@
       401:
         description: "Credenciales inválidas"
 
-# Sigue debajo de /auth/login en src/docs/paths/auth.yaml
-
 /auth/refresh-token:
   post:
     tags:
@@ -82,3 +80,80 @@
               message: "Sesión cerrada de forma segura. Conexión de tokens eliminada."
       401:
         description: "No autorizado"
+
+/auth/refresh-token:
+  post:
+    tags:
+      - Autenticación
+    summary: "Renovar el token de acceso (Access Token)"
+    description: "Recibe un Refresh Token válido y genera un nuevo Access Token de 15 minutos sin pedir credenciales."
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - refreshToken
+            properties:
+              refreshToken:
+                type: string
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    responses:
+      200:
+        description: "Token renovado exitosamente"
+        content:
+          application/json:
+            example:
+              status: "success"
+              statusCode: 200
+              message: "Token de acceso renovado con éxito."
+              data:
+                accessToken: "eyJhbGciOiJIUzI1Ni..."
+      403:
+        description: "Token inválido, expirado o revocado"
+
+/auth/otp/request:
+  post:
+    tags:
+      - Autenticación
+    summary: "Solicitar o reenviar código de seguridad OTP"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [email]
+            properties:
+              email:
+                type: string
+                example: "cajero@byteflow.com"
+    responses:
+      200:
+        description: "Código generado y enviado"
+
+/auth/otp/verify:
+  post:
+    tags:
+      - Autenticación
+    summary: "Verificar OTP para completar el 2FA"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [email, otp]
+            properties:
+              email:
+                type: string
+                example: "cajero@byteflow.com"
+              otp:
+                type: string
+                example: "584920"
+    responses:
+      200:
+        description: "Verificación exitosa, retorna los JWT de acceso"
+      400:
+        description: "Código incorrecto o expirado"

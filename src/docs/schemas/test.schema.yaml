@@ -1,0 +1,39 @@
+SendMediaInput:
+      type: object
+      required:
+        - phone
+        - mediaType
+        - mimetype
+        - filename
+      properties:
+        phone:
+          type: string
+          description: Número de teléfono del destinatario con código de país.
+          example: "573136064249"
+        mediaType:
+          type: string
+          enum: [image, video, audio, document]
+          description: Tipo de archivo multimedia que se va a despachar.
+          example: document
+        url:
+          type: string
+          format: uri
+          description: Enlace HTTP/HTTPS público del archivo. Requerido si no se envía base64.
+          example: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+        base64:
+          type: string
+          description: Cadena del archivo codificado en Base64 puro. Requerido si no se envía url.
+          example: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        mimetype:
+          type: string
+          description: Tipo MIME estándar del archivo.
+          example: application/pdf
+        filename:
+          type: string
+          description: Nombre con el que se guardará o previsualizará el archivo en WhatsApp.
+          example: Factura_ByteFlow_1042.pdf
+        caption:
+          type: string
+          description: Texto descriptivo que acompaña al archivo (No aplica para audios).
+          maxLength: 1024
+          example: "¡Hola! Adjuntamos el detalle en PDF de tu última compra."

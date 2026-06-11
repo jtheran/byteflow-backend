@@ -1,0 +1,237 @@
+/test/mail/send:
+  post:
+    tags:
+      - Pruebas de Infraestructura (Dev Only)
+    summary: "Probar el sistema de colas asíncronas y envío de emails"
+    description: "Endpoint público de desarrollo para verificar que Express, Zod, Redis, BullMQ y Nodemailer estén sincronizados al 100%."
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+            properties:
+              email:
+                type: string
+                format: email
+                example: "support@byteforge.com"
+                description: "Correo electrónico real o de trampa (Mailpit) donde llegará el mensaje de prueba."
+    responses:
+      200:
+        description: "Trabajo encolado exitosamente"
+        content:
+          application/json:
+            example:
+              status: "success"
+              statusCode: 200
+              message: "🚀 Correo de prueba encolado exitosamente en BullMQ. Revisa tu terminal y tu trampa de correos."
+      400:
+        description: "Error de validación en el formato del email (Zod)"
+        content:
+          application/json:
+            example:
+              status: "error"
+              message: "Error de validación en los datos enviados."
+              errors:
+                - field: "email"
+                  message: "El formato del correo electrónico no es válido."
+      500:
+        description: "Error interno del servidor o falla de conexión con Redis"
+
+
+/test/notify/push:
+  post:
+    tags:
+      - Pruebas de Infraestructura (Dev Only)
+    summary: "Probar el sistema de Notificaciones Push internas en tiempo real"
+    description: "Endpoint de desarrollo para emitir alertas instantáneas mediante WebSockets (Socket.io) utilizando el adaptador de sincronización de Redis."
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - title
+              - message
+              - type
+            properties:
+              title:
+                type: string
+                example: "🚨 Alerta de Inventario"
+                description: "Título llamativo que aparecerá en la notificación flotante (Toast) del Frontend."
+              message:
+                type: string
+                example: "El producto 'Café Molido Gourmet' ha alcanzado el stock mínimo (5 unidades)."
+                description: "Cuerpo o detalle informativo de la alerta push."
+              type:
+                type: string
+                enum: [info, warning, success, danger]
+                example: "warning"
+                description: "Estilo visual que adoptará la notificación en la interfaz de usuario."
+    responses:
+      200:
+        description: "Notificación Push emitida con éxito hacia los canales de WebSockets"
+        content:
+          application/json:
+            example:
+              status: "success"
+              statusCode: 200
+              message: "✨ Notificación Push en tiempo real emitida exitosamente por WebSockets a través de Redis."
+      400:
+        description: "Error de validación en el payload (Zod)"
+        content:
+          application/json:
+            example:
+              status: "error"
+              message: "Error de validación en los datos enviados."
+              errors:
+                - field: "type"
+                  message: "El tipo de notificación debe ser uno de los siguientes: info, warning, success, danger."
+      500:
+        description: "Error interno o Socket.io no inicializado en el servidor"
+
+
+/test/wsp/qr:
+  get:
+    tags:
+      - Pruebas de Infraestructura (Dev Only)
+    summary: "Inicializar bot y obtener el Código QR de WhatsApp"
+    description: "Despierta la sesión del bot en el contenedor OpenWA y retorna el string o imagen del código QR necesario para vincular el dispositivo móvil."
+    responses:
+      200:
+        description: "Código QR generado u obtenido exitosamente"
+        content:
+          application/json:
+            example:
+              status: "success"
+              statusCode: 200
+              message: "📸 Código QR obtenido correctamente del contenedor OpenWA."
+              data: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+      500:
+        description: "Error de comunicación o el contenedor OpenWA está apagado"
+
+/test/wsp/send/text:
+  post:
+    tags:
+      - Pruebas de Infraestructura (Dev Only)
+    summary: "Probar el envío de mensajes por WhatsApp encolados"
+    description: "Valida el número telefónico, inyecta la tarea en la cola asíncrona de Redis (BullMQ) y libera la petición de inmediato mientras el Worker despacha el mensaje mediante OpenWA."
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - phone
+              - text
+            properties:
+              phone:
+                type: string
+                example: "573001234567"
+                description: "Número telefónico en formato internacional completo (Código de país + número) sin espacios ni símbolos."
+              text:
+                type: string
+                example: "¡Hola desde ByteFlow POS! Tu infraestructura OpenWA está en línea. 🚀"
+                description: "Cuerpo del mensaje de texto que se enviará al destinatario."
+    responses:
+      200:
+        description: "Mensaje encolado con éxito en la cola de Redis"
+        content:
+          application/json:
+            example:
+              status: "success"
+              statusCode: 200
+              message: "🚀 Mensaje de WhatsApp enviado a la cola de Redis de forma exitosa."
+      400:
+        description: "Error de validación en el payload (Zod)"
+        content:
+          application/json:
+            example:
+              status: "error"
+              message: "Error de validación en los datos enviados."
+              errors:
+                - field: "phone"
+                  message: "El número de teléfono debe contener únicamente dígitos numéricos y el código de país."
+      500:
+        description: "Fallo interno en el sistema de colas o base de datos"
+
+/test/wsp/send/media:
+  post:
+    summary: Encolar mensaje multimedia de WhatsApp
+    description: Valida el payload e inyecta una tarea en la cola asíncrona de BullMQ gestionada por Redis para enviar archivos (imágenes, vídeos, audios o documentos) a través del contenedor OpenWA.
+    tags:
+      - Pruebas de Infraestructura (Dev Only)
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SendMediaInput'
+    responses:
+      '200':
+        description: Tarea encolada con éxito en Redis.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: success
+                statusCode:
+                  type: integer
+                  example: 200
+                message:
+                  type: string
+                  example: 🚀 Envío de document inyectado exitosamente en la cola de Redis.
+                data:
+                  type: string
+                  nullable: true
+                  example: null
+      '400':
+        description: Error de validación en los datos enviados (Zod Middleware).
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: error
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: Error de validación en los datos enviados.
+                errors:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                        example: body.url
+                      message:
+                        type: string
+                        example: Debes proporcionar al menos una fuente para el archivo -> 'url' o 'base64'.
+      '500':
+        description: Error interno del servidor o falla de conexión con Redis.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: error
+                statusCode:
+                  type: integer
+                  example: 500
+                message:
+                  type: string
+                  example: Internal server error.

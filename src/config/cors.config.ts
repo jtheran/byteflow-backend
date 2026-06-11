@@ -1,4 +1,3 @@
-// src/config/cors.config.ts
 import cors from 'cors';
 
 const allowedOrigins = process.env.NODE_ENV === 'production' 
@@ -8,7 +7,7 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
     ]
   : [
     'http://localhost:3000', 
-    'http://localhost:4000'
+    'http://localhost:5842'
     ];
 
 export const corsMiddleware = () => {

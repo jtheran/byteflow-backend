@@ -1,10 +1,10 @@
 // src/routes/auth.routes.ts
 import { Router } from 'express';
-import { handleLogin, handleLogout, handleRefreshToken } from '../controllers/auth.controller';
+import { handleLogin, handleLogout, handleRefreshToken, handleRequestOTP, handleVerifyOTP } from '../controllers/auth.controller';
 import { isAuth, checkPermission } from '../middlewares/auth.middleware';
 import { validateRequest } from '../middlewares/validate.middleware';
 import { loginLimiter } from '../middlewares/security.middleware';
-import { LoginSchema, RefreshTokenSchema } from '../schemas/auth.schema';
+import { LoginSchema, RefreshTokenSchema, VerifyOTPSchema } from '../schemas/auth.schema';
 
 const router = Router();
 
@@ -15,13 +15,8 @@ router.post('/refresh-token', validateRequest(RefreshTokenSchema), handleRefresh
 
 router.post('/logout', isAuth, handleLogout);
 
-// Ruta Protegida de ejemplo: Solo accesible si estás logueado AND tienes el permiso 'sales:void' (o eres ADMIN)
-router.get('/test-secure', isAuth, checkPermission('sales:void'), (req, res) => {
-  res.json({
-    status: 'success',
-    message: '¡Pasaste los filtros de ciberseguridad! Tienes acceso a operaciones críticas.',
-    userData: req.user,
-  });
-});
+router.post('/otp/request', loginLimiter, handleRequestOTP);
+
+router.post('/otp/verify', loginLimiter, validateRequest(VerifyOTPSchema), handleVerifyOTP);
 
 export default router;

@@ -22,3 +22,17 @@ export const RefreshTokenSchema = z.object({
       .min(1, 'El token de refresco es requerido para procesar la solicitud.')
   })
 });
+
+export const VerifyOTPSchema = z.object({
+  body: z.object({
+    email: z
+      .string()
+      .min(1, 'El correo electrónico es requerido.')
+      .email({ message: 'El formato del correo electrónico no es válido.' }),
+    otp: z
+      .string()
+      .min(6, 'El código OTP debe tener exactamente 6 dígitos.')
+      .max(6, 'El código OTP debe tener exactamente 6 dígitos.')
+      .regex(/^\d+$/, 'El código OTP debe contener únicamente números.')
+  })
+});

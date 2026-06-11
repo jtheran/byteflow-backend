@@ -4,15 +4,15 @@ import { helmetMiddleware, obfuscateHeadersMiddleware } from './config/helmet.co
 import { errorHandler } from './middlewares/error.middleware';
 import prisma from './config/db.config';
 import { apiLimiter } from './middlewares/security.middleware';
+import { xssSanitizer } from './middlewares/xss.middleware';
 import hpp from 'hpp';
-// @ts-ignore
-import xss from 'xss-clean';
 
 //Importacion de Documentacion
 import swaggerUi from 'swagger-ui-express';
 import { swaggerDocument } from './config/swagger.config';
 
 //Importacion de Rutas
+import testRoutes from './routes/test/test.route.spec';
 import authRoutes from './routes/auth.route';
 import auditRoutes from './routes/audit.route';
 
@@ -26,9 +26,12 @@ app.use(corsMiddleware());
 app.use(apiLimiter);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
-app.use(xss());
-app.use(hpp());
 app.use('/assets', express.static('public'));
+app.use(xssSanitizer);
+app.use(xssSanitizer);
+
+// Rutas
+app.use('/test', testRoutes);
 app.use('/auth', authRoutes);
 app.use('/audit', auditRoutes);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
@@ -63,27 +66,6 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
     })
   )
 
-// Ruta Base de Prueba (Health Check)
-app.get('/health', async (req: Request, res: Response) => {
-  try {
-    // Intenta hacer un conteo rápido en la tabla roles para validar conexión
-    const rolesCount = await prisma.role.count();
-
-    res.status(200).json({
-      status: 'success',
-      message: 'ByteFlow API & Prisma están listos 🚀',
-      database: 'Connected ✅',
-      registeredRoles: rolesCount,
-      timestamp: new Date()
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: 'error',
-      message: 'Error al conectar con la Base de Datos',
-      error: error instanceof Error ? error.message : error
-    });
-  }
-});
 
 app.use(errorHandler);
 

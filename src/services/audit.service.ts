@@ -1,4 +1,3 @@
-// src/services/audit.service.ts
 import prisma from '../config/db.config';
 
 interface ICreateAuditInput {
@@ -25,7 +24,7 @@ export const createAuditLog = async (data: ICreateAuditInput): Promise<void> => 
     // Registramos en PostgreSQL de manera asíncrona
     await prisma.auditLog.create({
       data: {
-        userId: data.userId,
+        userId: data.userId || null,
         userEmail: data.userEmail,
         action: data.action,
         module: data.module,

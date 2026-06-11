@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import config from '../config/config';
 import { Request, Response, NextFunction } from 'express';
-import createError from 'http-errors'; // <--- Importamos el generador de errores
+import createError from 'http-errors';
 import { loginService } from '../services/auth.service';
+import { sendOTPService, verifyOTPService } from '../services/otp.service';
 import { sendSuccess } from '../utils/resp.util';
 import { 
   generateAccessToken, 
@@ -96,5 +97,56 @@ export const handleLogout = async (req: Request, res: Response, next: NextFuncti
     });
   } catch (error) {
     next(createError(500, 'Error al procesar el cierre de sesión.'));
+  }
+};
+
+export const handleRequestOTP = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { email } = req.body;
+    
+    // Aquí podrías validar primero si el usuario existe en tu DB
+    await sendOTPService(email);
+
+    sendSuccess({
+      res,
+      req,
+      action: "GENERATE_OTP_CODE",
+      module: "AUTH",
+      statusCode: 200,
+      message: '🔑 Código de verificación generado y enviado con éxito a tu correo electrónico.',
+      data: { 
+        id: undefined,
+        email
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// 2. Verificar OTP y otorgar acceso completo
+export const handleVerifyOTP = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { email, otp } = req.body;
+
+    const isOtpValid = await verifyOTPService(email, otp);
+    if (!isOtpValid) {
+      return next(createError(400, 'El código OTP es inválido, ya fue utilizado o ha expirado.'));
+    }
+
+    sendSuccess({
+      res,
+      req,
+      action: "VERIFY_OTP_CODE",
+      module: "AUTH",
+      statusCode: 200,
+      message: '🛡️ Segundo factor verificado con éxito. Acceso concedido.',
+      data: { 
+        id: undefined,
+        email
+      }
+    });
+  } catch (error) {
+    next(error);
   }
 };
