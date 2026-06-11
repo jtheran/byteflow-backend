@@ -1,0 +1,21 @@
+AuditLog:
+  type: object
+  properties:
+    id:
+      type: string
+    userId:
+      type: string
+      nullable: true
+    userEmail:
+      type: string
+    action:
+      type: string
+    module:
+      type: string
+    description:
+      type: string
+    statusCode:
+      type: integer
+    createdAt:
+      type: string
+      format: date-time

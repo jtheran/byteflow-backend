@@ -1,0 +1,45 @@
+/audit:
+  get:
+    tags:
+      - Auditoría
+    summary: "Obtener logs de auditoría interna (Paginados)"
+    description: "Devuelve la lista de eventos de auditoría. Requiere rol ADMIN o SUPPORT."
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 1
+        description: "Número de página"
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 20
+        description: "Cantidad de registros por página"
+      - name: module
+        in: query
+        schema:
+          type: string
+        description: "Filtrar por módulo (AUTH, SECURITY, etc.)"
+    responses:
+      200:
+        description: "Lista recuperada con éxito"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                data:
+                  type: object
+                  properties:
+                    logs:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/AuditLog'
+      403:
+        description: "Permisos insuficientes"

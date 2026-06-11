@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",                          /* Versión moderna de JS */
+    "module": "commonjs",                        /* Estándar para Node.js */
+    "lib": ["ES2022"],
+    "allowJs": true,
+    "outDir": "./dist",                          /* Dónde irá el código compilado */
+    "rootDir": "./src",                          /* Dónde está nuestro código fuente */
+    "strict": true,                              /* Habilita chequeo estricto de tipos */
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,                     /* Compatibilidad con módulos tradicionales */
+    "skipLibCheck": true,                        /* Omite chequear tipos de librerías externas */
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"]
+}

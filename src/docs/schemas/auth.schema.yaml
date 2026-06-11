@@ -1,0 +1,12 @@
+LoginInput:
+  type: object
+  required:
+    - email
+    - password
+  properties:
+    email:
+      type: string
+      example: admin@byteflow.com
+    password:
+      type: string
+      example: ByteFlow2026*

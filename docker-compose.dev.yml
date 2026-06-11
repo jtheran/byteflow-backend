@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: byteforge-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: ${TZ}
+    ports:
+      - "15432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - byteforge-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d byteforge_pos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: byteforge-cache
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "16379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - byteforge-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: mailpit
+    restart: unless-stopped
+    ports:
+      - "18025:8025" # Interfaz Web
+      - "1025:1025" # Servidor SMTP
+    volumes:
+      - mailpit_data:/data
+    environment:
+      MP_DATA_FILE: /data/mailpit.db
+    networks:
+      - byteforge-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  mailpit_data:
+
+networks:
+  byteforge-network:
+    driver: bridge
