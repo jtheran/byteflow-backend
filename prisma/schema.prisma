@@ -83,3 +83,101 @@ model AuditLog {
 
   @@map("audit_logs")
 }
+
+// core/prisma/schema.prisma (Sección del Módulo de Inventario)
+
+model Product {
+  id           String        @id @default(uuid())
+  sku          String        @unique // Código de barras o identificador único comercial
+  name         String
+  description  String?       @db.Text
+  price        Decimal       @db.Decimal(12, 2) // Precio de venta regular
+  cost         Decimal       @db.Decimal(12, 2) // Costo de adquisición (para calcular ganancias netas)
+  stock        Int           @default(0)
+  minStock     Int           @default(5)        // Umbral mínimo para alertas de reabastecimiento
+  isActive     Boolean       @default(true)     // Soft delete para no romper el histórico de ventas
+  
+  // Relaciones
+  categoryId   String
+  category     Category      @relation(fields: [categoryId], references: [id])
+  supplierId   String?
+  supplier     Supplier?     @relation(fields: [supplierId], references: [id])
+  stockHistory StockMovement[]
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([sku])
+  @@index([name])
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  isActive    Boolean   @default(true)
+  products    Product[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Supplier {
+  id          String    @id @default(uuid())
+  nit         String    @unique // Documento de identificación fiscal / RUT
+  companyName String
+  contactName String?
+  phone       String?
+  email       String?
+  address     String?
+  isActive    Boolean   @default(true)
+  products    Product[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model StockMovement {
+  id          String       @id @default(uuid())
+  productId   String
+  product     Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity    Int          // Cantidad del movimiento (positivo para entrada, negativo para salida)
+  type        MovementType // ENUM: COMPRA, VENTA, AJUSTE_INVENTARIO, DEVOLUCION, MERMA
+  reason      String?      // Razón del ajuste manual (ej: "Producto dañado en bodega")
+  
+  // Auditoría: Quién ejecutó el movimiento
+  userId      String       // ID del cajero o administrador
+  userEmail   String
+
+  createdAt   DateTime     @default(now())
+
+  @@index([productId])
+  @@index([type])
+}
+
+enum MovementType {
+  COMPRA
+  VENTA
+  AJUSTE_INVENTARIO
+  DEVOLUCION
+  MERMA
+}
+
+model Client {
+  id        String   @id @default(uuid())
+  document  String   @unique // Cédula, NIT o Pasaporte
+  name      String
+  email     String?  @unique
+  phone     String?  // Formato limpio para conectarlo con el bot de WhatsApp
+  address   String?
+  isActive  Boolean  @default(true) // Soft delete para proteger el histórico de ventas
+
+  // Relaciones (Descomentar cuando crees el modelo Sale)
+  // sales     Sale[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([document])
+  @@index([name])
+}

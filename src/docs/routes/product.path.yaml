@@ -1,0 +1,104 @@
+/module/product:
+  post:
+    summary: Registrar un nuevo producto en el inventario
+    tags:
+      - Modulo Productos
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateProductInput'
+    responses:
+      '201':
+        description: Producto e historial de Kárdex creados con éxito.
+  get:
+    summary: Listar productos con paginación y búsqueda
+    tags:
+      - Modulo Productos
+    parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 10
+      - name: search
+        in: query
+        description: Filtro por nombre o código de barras (SKU)
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Catálogo recuperado de forma exitosa.
+
+/module/product/{id}:
+  put:
+    summary: Actualizar datos de un producto existente
+    tags:
+      - Modulo Productos
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateProductInput'
+    responses:
+      '200':
+        description: Cambios aplicados con éxito.
+  delete:
+    summary: Eliminación lógica de un producto (Soft Delete)
+    description: Desactiva el producto cambiando `isActive` a false para resguardar la consistencia de las transacciones viejas en el POS.
+    tags:
+      - Modulo Productos
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: El producto ha sido ocultado del catálogo activo.
+
+/module/product/{id}/status:
+  patch:
+    summary: Activar o desactivar manualmente un producto
+    description: Permite suspender temporalmente la venta de un artículo o reactivarlo.
+    tags:
+      - Modulo Productos
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - isActive
+            properties:
+              isActive:
+                type: boolean
+                description: Estado objetivo del producto en el catálogo.
+                example: true
+    responses:
+      '200':
+        description: Estado conmutado de manera correcta.

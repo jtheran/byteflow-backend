@@ -2,7 +2,6 @@ import express, { Application, Request, Response } from 'express';
 import { corsMiddleware } from './config/cors.config';
 import { helmetMiddleware, obfuscateHeadersMiddleware } from './config/helmet.config';
 import { errorHandler } from './middlewares/error.middleware';
-import prisma from './config/db.config';
 import { apiLimiter } from './middlewares/security.middleware';
 import { xssSanitizer } from './middlewares/xss.middleware';
 import hpp from 'hpp';
@@ -12,9 +11,12 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerDocument } from './config/swagger.config';
 
 //Importacion de Rutas
+import adminRoutes from './routes/admin.route';
 import testRoutes from './routes/test/test.route.spec';
 import authRoutes from './routes/auth.route';
 import auditRoutes from './routes/audit.route';
+import productRoutes from './routes/product.route';
+import clientRoutes from './routes/client.route';
 
 const app: Application = express();
 
@@ -27,13 +29,16 @@ app.use(apiLimiter);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use('/assets', express.static('public'));
-app.use(xssSanitizer);
+app.use(hpp());
 app.use(xssSanitizer);
 
 // Rutas
 app.use('/test', testRoutes);
 app.use('/auth', authRoutes);
 app.use('/audit', auditRoutes);
+app.use('/admin', adminRoutes);
+app.use('/module', productRoutes);
+app.use('/module', clientRoutes);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
       explorer: true,
       customSiteTitle: 'ByteFlow API',

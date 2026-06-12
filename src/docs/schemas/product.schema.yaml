@@ -1,0 +1,56 @@
+CreateProductInput:
+      type: object
+      required:
+        - sku
+        - name
+        - price
+        - cost
+        - categoryId
+      properties:
+        sku:
+          type: string
+          description: Código de barras o clave única del artículo.
+          example: "7702004001234"
+        name:
+          type: string
+          example: "Gaseosa Coca-Cola 1.5L"
+        description:
+          type: string
+          example: "Botella no retornable original"
+        price:
+          type: number
+          format: float
+          example: 4500.00
+        cost:
+          type: number
+          format: float
+          example: 3100.00
+        stock:
+          type: integer
+          default: 0
+          example: 24
+        minStock:
+          type: integer
+          default: 5
+          example: 6
+        categoryId:
+          type: string
+          format: uuid
+          example: "43763f00-349c-493a-8673-8a3959146112"
+        supplierId:
+          type: string
+          format: uuid
+          nullable: true
+          example: "a809dbbe-f155-4672-9694-df7f8cb5b3d6"
+
+    UpdateProductInput:
+      type: object
+      description: Payload parcial. Todos los campos de CreateProductInput son opcionales aquí.
+      properties:
+        name:
+          type: string
+          example: "Gaseosa Coca-Cola 1.5L Sabor Original"
+        price:
+          type: number
+          format: float
+          example: 4800.00
