@@ -65,3 +65,46 @@
                 message:
                   type: string
                   example: "Fallo de conexión en el clúster de Redis: Connection refused."
+
+/admin/dashboard:
+  get:
+    summary: Obtener el resumen ejecutivo y analítico del sistema POS
+    description: Consume métricas consolidadas de ventas, costes de compras a proveedores, cuadre de caja del día por método de pago y alertas de quiebre de stock en inventario.
+    tags:
+      - Panel de Administración
+    responses:
+      '200':
+        description: Datos estadísticos consolidados correctamente.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                statusCode:
+                  type: integer
+                  example: 200
+                action:
+                  type: string
+                  example: "GET_SYSTEM_DASHBOARD_ANALYTICS"
+                module:
+                  type: string
+                  example: "DASHBOARD"
+                data:
+                  type: object
+                  properties:
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "usr_b4f1a234"
+                        email:
+                          type: string
+                          example: "admin@byteforge.com"
+                    analytics:
+                      $ref: '#/components/schemas/DashboardAnalyticsOutput'
+      '500':
+        description: Falla en los cálculos o agregados internos del motor PostgreSQL.

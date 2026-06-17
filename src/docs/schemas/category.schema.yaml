@@ -1,0 +1,18 @@
+CreateCategoryInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: "Bebidas y Refrescos"
+        description:
+          type: string
+          example: "Gaseosas, aguas minerales, jugos naturales y energizantes"
+
+UpdateCategoryInput:
+  type: object
+  properties:
+    name:
+      type: string
+      example: "Bebidas Azucaradas y Aguas"

@@ -3,6 +3,9 @@ import { createBullBoard } from '@bull-board/api';
 import { ExpressAdapter } from '@bull-board/express';
 import { whatsappQueue } from '../queues/wsp.queue';
 import { emailQueue } from '../queues/email.queue';
+import { handleGetDashboardAnalytics } from '../controllers/dashboard.controller';
+import { checkPermission, isAuth } from '../middlewares/auth.middleware';
+
 
 const { BullMQAdapter } = require('@bull-board/api/bullMQAdapter');
 const router = Router();
@@ -18,5 +21,6 @@ createBullBoard({
 
 // 3. Montamos el router gráfico
 router.use('/queues', serverAdapter.getRouter());
+router.get('/summary', handleGetDashboardAnalytics);
 
 export default router;

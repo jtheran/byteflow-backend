@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { handleCreateProduct, handleFindProduct, handleGetProducts, handleToggleProductStatus, handleUpdateProduct } from '../controllers/product.controller';
 import { validateRequest } from '../middlewares/validate.middleware';
+import { checkPermission } from '../middlewares/auth.middleware';
 import { createProductSchema, updateProductSchema } from '../schemas/product.schema';
 
 const router = Router();

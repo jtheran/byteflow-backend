@@ -1,0 +1,71 @@
+/module/category:
+  post:
+    summary: Crear una nueva categoría de productos
+    tags:
+      - Modulo de Categorias
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateCategoryInput'
+    responses:
+      '201':
+        description: Categoría guardada con éxito.
+  get:
+    summary: Listar categorías activas
+    tags:
+      - Modulo de Categorias
+    parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        schema:
+          type: integer
+      - name: search
+        in: query
+        description: Filtrar por coincidencia en nombre
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Listado devuelto con éxito.
+
+/module/category/{id}:
+  put:
+    summary: Actualizar datos de una categoría
+    tags:
+      - Modulo de Categorias
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateCategoryInput'
+    responses:
+      '200':
+        description: Cambios guardados.
+  delete:
+    summary: Desactivación lógica de categoría (Soft Delete)
+    tags:
+      - Modulo de Categorias
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Categoría deshabilitada del POS.

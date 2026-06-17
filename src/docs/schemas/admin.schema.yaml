@@ -1,0 +1,72 @@
+DashboardAnalyticsOutput:
+      type: object
+      properties:
+        financials:
+          type: object
+          properties:
+            totalSalesRevenue:
+              type: number
+              example: 154500.50
+            totalPurchasesCost:
+              type: number
+              example: 92000.00
+            estimatedNetProfit:
+              type: number
+              example: 62500.50
+            averageTicket:
+              type: number
+              example: 4500.25
+            totalSalesCount:
+              type: integer
+              example: 34
+        inventoryStatus:
+          type: object
+          properties:
+            totalActiveProducts:
+              type: integer
+              example: 120
+            lowStockAlertCount:
+              type: integer
+              example: 3
+            criticalItems:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "Aceite de Oliva 1L"
+                  stock:
+                    type: integer
+                    example: 2
+                  minStock:
+                    type: integer
+                    example: 5
+        topSellingProducts:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "Gaseosa Coca-Cola 1.5L"
+              sku:
+                type: string
+                example: "7702004001234"
+              quantitySold:
+                type: integer
+                example: 45
+        todayPaymentMethodsSquare:
+          type: array
+          items:
+            type: object
+            properties:
+              method:
+                type: string
+                example: "EFECTIVO"
+              count:
+                type: integer
+                example: 20
+              total:
+                type: number
+                example: 95000.00

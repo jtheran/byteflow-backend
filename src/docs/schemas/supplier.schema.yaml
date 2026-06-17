@@ -1,0 +1,35 @@
+CreateSupplierInput:
+      type: object
+      required:
+        - nit
+        - companyName
+      properties:
+        nit:
+          type: string
+          example: "901234567-1"
+        companyName:
+          type: string
+          example: "Distribuidora Mayorista ByteForge S.A.S."
+        contactName:
+          type: string
+          example: "Carlos Mendoza"
+        phone:
+          type: string
+          example: "573001234567"
+        email:
+          type: string
+          format: email
+          example: "proveedores@byteforge.com"
+        address:
+          type: string
+          example: "Zona Industrial Lote 4, Cartagena"
+
+UpdateSupplierInput:
+      type: object
+      properties:
+        companyName:
+          type: string
+          example: "Distribuidora Alianzas S.A."
+        phone:
+          type: string
+          example: "573009876543"

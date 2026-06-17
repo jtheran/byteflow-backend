@@ -1,0 +1,71 @@
+/module/supplier:
+  post:
+    summary: Dar de alta un nuevo proveedor comercial
+    tags:
+      - Modulo de Proveedores
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateSupplierInput'
+    responses:
+      '201':
+        description: Proveedor creado con éxito.
+  get:
+    summary: Listar proveedores activos del POS
+    tags:
+      - Modulo de Proveedores
+    parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        schema:
+          type: integer
+      - name: search
+        in: query
+        description: Buscar por Razón Social o NIT
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Éxito en la consulta.
+
+/module/supplier/{id}:
+  put:
+    summary: Modificar datos del proveedor
+    tags:
+      - Modulo de Proveedores
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateSupplierInput'
+    responses:
+      '200':
+        description: Registro actualizado.
+  delete:
+    summary: Desactivación lógica de un proveedor
+    tags:
+      - Modulo de Proveedores
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: El proveedor fue inhabilitado.
