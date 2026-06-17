@@ -1,0 +1,69 @@
+/module/sale:
+  post:
+    summary: Procesar y facturar una nueva venta ( Checkout )
+    description: Abre una transacción ACID. Valida stock, decrementa inventario, escribe logs de Kárdex y añade una tarea asíncrona a BullMQ para notificar al cliente vía WhatsApp.
+    tags:
+      - Modulo de Ventas
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateSaleInput'
+    responses:
+      '201':
+        description: Venta concretada y ticket de facturación emitido.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: success
+                statusCode:
+                  type: integer
+                  example: 201
+                action:
+                  type: string
+                  example: PROCESS_NEW_SALE_TRANSACTION
+                module:
+                  type: string
+                  example: SALE
+                data:
+                  type: object
+                  properties:
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "usr_b4f1a234"
+                    sale:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        invoiceNumber:
+                          type: string
+                          example: "FACT-00001"
+                        total:
+                          type: number
+                          example: 9000.00
+
+/module/sale/{id}:
+  get:
+    summary: Obtener el desglose completo de una venta
+    tags:
+      - Modulo de Ventas
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Datos de la factura recuperados de forma exitosa.

@@ -1,0 +1,34 @@
+/module/purchase:
+  post:
+    summary: Registrar una compra de mercancía a un proveedor
+    description: Aumenta el stock de los productos, actualiza el costo unitario y registra los movimientos en el Kardex.
+    tags:
+      - Modulo de Abastecimiento
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - supplierId
+              - items
+            properties:
+              supplierId:
+                type: string
+                format: uuid
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    productId:
+                      type: string
+                      format: uuid
+                    quantity:
+                      type: integer
+                    unitCost:
+                      type: number
+    responses:
+      '201':
+        description: Compra procesada con éxito.

@@ -2,7 +2,7 @@
   post:
     summary: Registrar un nuevo producto en el inventario
     tags:
-      - Modulo Productos
+      - Modulo de Productos
     requestBody:
       required: true
       content:
@@ -15,7 +15,7 @@
   get:
     summary: Listar productos con paginación y búsqueda
     tags:
-      - Modulo Productos
+      - Modulo de Productos
     parameters:
       - name: page
         in: query
@@ -40,7 +40,7 @@
   put:
     summary: Actualizar datos de un producto existente
     tags:
-      - Modulo Productos
+      - Modulo de Productos
     parameters:
       - name: id
         in: path
@@ -61,7 +61,7 @@
     summary: Eliminación lógica de un producto (Soft Delete)
     description: Desactiva el producto cambiando `isActive` a false para resguardar la consistencia de las transacciones viejas en el POS.
     tags:
-      - Modulo Productos
+      - Modulo de Productos
     parameters:
       - name: id
         in: path
@@ -78,7 +78,7 @@
     summary: Activar o desactivar manualmente un producto
     description: Permite suspender temporalmente la venta de un artículo o reactivarlo.
     tags:
-      - Modulo Productos
+      - Modulo de Productos
     parameters:
       - name: id
         in: path

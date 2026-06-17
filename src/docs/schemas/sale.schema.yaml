@@ -1,0 +1,30 @@
+CreateSaleInput:
+      type: object
+      required:
+        - paymentMethod
+        - items
+      properties:
+        clientId:
+          type: string
+          format: uuid
+          nullable: true
+          example: "7c9b8a12-532b-4291-bc45-e6f7a8b9c0d1"
+        paymentMethod:
+          type: string
+          enum: [EFECTIVO, TARJETA, TRANSFERENCIA]
+          example: "EFECTIVO"
+        items:
+          type: array
+          items:
+            type: object
+            required:
+              - productId
+              - quantity
+            properties:
+              productId:
+                type: string
+                format: uuid
+                example: "43763f00-349c-493a-8673-8a3959146112"
+              quantity:
+                type: integer
+                example: 2

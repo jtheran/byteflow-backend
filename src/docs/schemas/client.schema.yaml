@@ -1,0 +1,78 @@
+ClientModel:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "7c9b8a12-532b-4291-bc45-e6f7a8b9c0d1"
+        document:
+          type: string
+          example: "10203040"
+        name:
+          type: string
+          example: "Juan Pérez Díaz"
+        email:
+          type: string
+          format: email
+          nullable: true
+          example: "juan.perez@gmail.com"
+        phone:
+          type: string
+          nullable: true
+          example: "573157000000"
+        address:
+          type: string
+          nullable: true
+          example: "Calle 45 #10-20, Cartagena"
+        isActive:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-06-12T13:45:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-06-12T13:45:00.000Z"
+
+    CreateClientInput:
+      type: object
+      required:
+        - document
+        - name
+      properties:
+        document:
+          type: string
+          description: Número de identificación único (Cédula, NIT o Pasaporte).
+          example: "10203040"
+        name:
+          type: string
+          description: Nombre completo o Razón Social comercial.
+          example: "Juan Pérez Díaz"
+        email:
+          type: string
+          format: email
+          description: Correo electrónico (Opcional).
+          example: "juan.perez@gmail.com"
+        phone:
+          type: string
+          description: Teléfono en formato limpio listo para integrarse a la cola de WhatsApp.
+          example: "573157000000"
+        address:
+          type: string
+          example: "Calle 45 #10-20, Cartagena"
+
+    UpdateClientInput:
+      type: object
+      description: Payload de actualización parcial para la entidad Cliente.
+      properties:
+        name:
+          type: string
+          example: "Juan Pérez Díaz S.A.S."
+        phone:
+          type: string
+          example: "573158888888"
+        address:
+          type: string
+          example: "Avenida Santander #5-12, Cartagena"

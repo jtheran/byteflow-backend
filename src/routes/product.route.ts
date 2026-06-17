@@ -5,10 +5,10 @@ import { createProductSchema, updateProductSchema } from '../schemas/product.sch
 
 const router = Router();
 
-router.post('/product', validateRequest(createProductSchema), handleCreateProduct);
-router.get('/product', handleGetProducts);
-router.get('/product/:identifier', handleFindProduct);
-router.put('/product/:id', validateRequest(updateProductSchema), handleUpdateProduct);
-router.patch('/product/:id/status', handleToggleProductStatus); // Activar o desactivar pasando body { isActive: boolean }
+router.post('/', validateRequest(createProductSchema), handleCreateProduct);
+router.get('/', handleGetProducts);
+router.get('/:identifier', handleFindProduct);
+router.put('/:id', validateRequest(updateProductSchema), handleUpdateProduct);
+router.patch('/:id/status', handleToggleProductStatus); // Activar o desactivar pasando body { isActive: boolean }
 
 export default router;

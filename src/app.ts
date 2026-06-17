@@ -15,8 +15,8 @@ import adminRoutes from './routes/admin.route';
 import testRoutes from './routes/test/test.route.spec';
 import authRoutes from './routes/auth.route';
 import auditRoutes from './routes/audit.route';
-import productRoutes from './routes/product.route';
-import clientRoutes from './routes/client.route';
+import ModuleRoutes from './routes/modules.route';
+
 
 const app: Application = express();
 
@@ -37,8 +37,7 @@ app.use('/test', testRoutes);
 app.use('/auth', authRoutes);
 app.use('/audit', auditRoutes);
 app.use('/admin', adminRoutes);
-app.use('/module', productRoutes);
-app.use('/module', clientRoutes);
+app.use('/module', ModuleRoutes);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
       explorer: true,
       customSiteTitle: 'ByteFlow API',

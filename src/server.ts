@@ -15,8 +15,9 @@ const startServer = async () => {
       server.listen(config.PORT, () => {
         console.log(`=================================`);
         console.log(` 🚀 ByteFlow Backend online`);
-        console.log(` ⚡ Puerto: http://localhost:${config.PORT}`);
-        console.log(` 🛠️  Ambiente: ${config.NODE_ENV}`);
+        console.log(` ⚡ Url: http://localhost:${config.PORT}`);
+        console.log(` 🛠️ Ambiente: ${config.NODE_ENV}`);
+        console.log(` 📚 Swagger: http://localhost:${config.PORT}/docs`);
         console.log(`=================================`);
       });
     } catch (error) {

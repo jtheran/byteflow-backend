@@ -5,10 +5,10 @@ import { createClientSchema, updateClientSchema } from '../schemas/client.schema
 
 const router = Router();
 
-router.post('/client', validateRequest(createClientSchema), handleCreateClient);
-router.get('/client', handleGetClients);
-router.get('/client/:identifier', handleFindClient);
-router.put('/client/:id', validateRequest(updateClientSchema), handleUpdateClient);
-router.delete('/client/:id', handleSoftDeleteClient);
+router.post('/', validateRequest(createClientSchema), handleCreateClient);
+router.get('/', handleGetClients);
+router.get('/:identifier', handleFindClient);
+router.put('/:id', validateRequest(updateClientSchema), handleUpdateClient);
+router.delete('/:id', handleSoftDeleteClient);
 
 export default router;

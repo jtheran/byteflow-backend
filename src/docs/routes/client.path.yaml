@@ -1,0 +1,134 @@
+/module/client:
+  post:
+    summary: Registrar un nuevo cliente en el sistema
+    description: Valida el payload mediante Zod, verifica que el documento/email no estén duplicados y persiste el cliente en la base de datos PostgreSQL.
+    tags:
+      - Modulo de Clientes
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateClientInput'
+    responses:
+      '201':
+        description: Cliente registrado exitosamente.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: success
+                statusCode:
+                  type: integer
+                  example: 201
+                action:
+                  type: string
+                  example: CREATE_NEW_CLIENT
+                module:
+                  type: string
+                  example: CLIENT
+                message:
+                  type: string
+                  example: Cliente registrado exitosamente.
+                data:
+                  type: object
+                  properties:
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "usr_b4f1a234"
+                        email:
+                          type: string
+                          example: "admin@byteforge.com"
+                    client:
+                      $ref: '#/components/schemas/ClientModel'
+      '500':
+        description: Error interno del servidor o error controlado mapeado por http-errors.
+
+  get:
+    summary: Listar clientes activos con paginación
+    description: Recupera los clientes que tengan `isActive: true` permitiendo búsquedas parciales por nombre o documento.
+    tags:
+      - Modulo de Clientes
+    parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 10
+      - name: search
+        in: query
+        description: Filtro para buscar por coincidencia en nombre o documento.
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Listado de clientes recuperado correctamente.
+
+/module/client/{identifier}:
+  get:
+    summary: Buscar un cliente por ID o Documento (Cédula/NIT)
+    description: Localiza un cliente específico del catálogo activo utilizando su UUID o su número de identificación fiscal.
+    tags:
+      - Modulo de Clientes
+    parameters:
+      - name: identifier
+        in: path
+        required: true
+        description: UUID del cliente o número de documento crudo.
+        schema:
+          type: string
+        example: "10203040"
+    responses:
+      '200':
+        description: Cliente localizado con éxito.
+
+/module/client/{id}:
+  put:
+    summary: Actualizar datos de un cliente existente
+    description: Modifica de forma parcial o total las propiedades de un cliente validando colisiones de documentos únicos.
+    tags:
+      - Modulo de Clientes
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: UUID único del cliente.
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateClientInput'
+    responses:
+      '200':
+        description: Datos del cliente actualizados.
+
+  delete:
+    summary: Eliminación lógica del cliente (Soft Delete)
+    description: Cambia el estado `isActive` a false para ocultarlo de las búsquedas sin romper la integridad contable de las ventas pasadas.
+    tags:
+      - Modulo de Clientes
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Cliente dado de baja lógicamente en el POS.
