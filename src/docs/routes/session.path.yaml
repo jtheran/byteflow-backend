@@ -1,0 +1,58 @@
+/module/session/current:
+  get:
+    summary: Consultar si el cajero actual tiene un turno activo y ver arqueo en tiempo real
+    tags:
+      - Control de Turnos y Caja
+    responses:
+      '200':
+        description: Estado devuelto con éxito.
+
+/module/session/open:
+  post:
+    summary: Realizar la apertura de la caja registradora
+    description: Registra el fondo base líquido con el que arranca el turno de ventas.
+    tags:
+      - Control de Turnos y Caja
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - initialBalance
+            properties:
+              initialBalance:
+                type: number
+                example: 50000.00
+              notes:
+                type: string
+                example: "Base de efectivo entregada por supervisor nocturno."
+    responses:
+      '21':
+        description: Caja abierta correctamente.
+
+/module/session/close:
+  post:
+    summary: Procesar el arqueo final y cierre de caja
+    description: Compara el balance esperado del sistema (base + ventas en efectivo) contra el conteo físico declarado por el cajero para calcular diferencias.
+    tags:
+      - Control de Turnos y Caja
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - actualBalance
+            properties:
+              actualBalance:
+                type: number
+                example: 125000.00
+              notes:
+                type: string
+                example: "Todo cuadrado sin novedades."
+    responses:
+      '200':
+        description: Caja cerrada y turno concluido.

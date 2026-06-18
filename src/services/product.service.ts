@@ -7,16 +7,18 @@ export const createProduct = async (data: any, userId: string, userEmail: string
   return await prisma.$transaction(async (tx :any) => {
     const product = await tx.product.create({
       data: {
-        sku: data.sku,
-        name: data.name,
-        description: data.description,
-        price: data.price,
-        cost: data.cost,
-        stock: data.stock,
-        minStock: data.minStock,
-        categoryId: data.categoryId,
-        supplierId: data.supplierId,
-      }
+      sku: data.sku,
+      name: data.name,
+      description: data.description || null,
+      price: data.price,
+      cost: data.cost,
+      stock: data.stock,
+      minStock: data.minStock,
+      categoryId: data.categoryId,
+      supplierId: data.supplierId || null,
+      expirationDate: data.expirationDate || null // 👈 NUEVO
+      },
+      include: { category: true, supplier: true }
     });
 
     if (data.stock > 0) {
@@ -86,15 +88,11 @@ export const updateProduct = async (id: string, data: any) => {
     return await prisma.product.update({
       where: { id },
       data: {
-        sku: data.sku,
-        name: data.name,
-        description: data.description,
-        price: data.price,
-        cost: data.cost,
-        minStock: data.minStock,
-        categoryId: data.categoryId,
-        supplierId: data.supplierId,
-      }
+      ...data,
+      // Si el campo viene explícitamente en el body, se mapea correctamente
+      expirationDate: data.expirationDate !== undefined ? data.expirationDate : undefined
+      },
+      include: { category: true, supplier: true }
     });
   };
   

@@ -11,6 +11,10 @@ export const createProductSchema = z.object({
     minStock: z.number().int().positive('El stock mínimo debe ser al menos 1.').default(5),
     categoryId: z.string('La categoría es obligatoria.' ).uuid('ID de categoría inválido.'),
     supplierId: z.string().uuid('ID de proveedor inválido.').optional(),
+    expirationDate: z.preprocess((arg) => {
+      if (typeof arg === 'string' && arg.trim() !== '') return new Date(arg);
+      return null;
+    }, z.date().nullable().optional())
   })
 });
 

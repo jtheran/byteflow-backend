@@ -6,6 +6,10 @@ import saleRoutes from './sale.route';
 import purchaseRoutes from './purchase.route';
 import supplierRoutes from './supplier.route';
 import categoryRoutes from './category.route';
+import userRoutes from './user.route';
+import sessionRoutes from './session.route';
+import mermaRoutes from './merma.route';
+import promotionRoutes from './promotion.route';
 
 const rootInit = Router();
 
@@ -15,5 +19,9 @@ rootInit.use('/sale', saleRoutes);
 rootInit.use('/purchase', purchaseRoutes);
 rootInit.use('/supplier', supplierRoutes);
 rootInit.use('/category', categoryRoutes);
+rootInit.use('/user', userRoutes);
+rootInit.use('/session', sessionRoutes);
+rootInit.use('/merma', mermaRoutes);
+rootInit.use('/promotion', promotionRoutes);
 
 export default rootInit;

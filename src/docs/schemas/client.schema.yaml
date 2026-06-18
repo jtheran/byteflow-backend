@@ -36,7 +36,7 @@ ClientModel:
           format: date-time
           example: "2026-06-12T13:45:00.000Z"
 
-    CreateClientInput:
+CreateClientInput:
       type: object
       required:
         - document
@@ -63,7 +63,7 @@ ClientModel:
           type: string
           example: "Calle 45 #10-20, Cartagena"
 
-    UpdateClientInput:
+UpdateClientInput:
       type: object
       description: Payload de actualización parcial para la entidad Cliente.
       properties:

@@ -1,0 +1,33 @@
+CreateUserInput:
+      type: object
+      required:
+        - username
+        - email
+        - password
+        - role
+      properties:
+        username:
+          type: string
+          example: "carlos_cajero"
+        email:
+          type: string
+          format: email
+          example: "carlos.mendoza@byteforge.com"
+        password:
+          type: string
+          format: password
+          example: "SecurePass123!"
+        role:
+          type: string
+          enum: [ADMIN, SUPERVISOR, CASHIER]
+          example: "CASHIER"
+
+UpdateUserInput:
+      type: object
+      properties:
+        role:
+          type: string
+          example: "SUPERVISOR"
+        email:
+          type: string
+          example: "carlos.supervisor@byteforge.com"

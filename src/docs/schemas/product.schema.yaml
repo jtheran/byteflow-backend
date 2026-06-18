@@ -42,8 +42,12 @@ CreateProductInput:
           format: uuid
           nullable: true
           example: "a809dbbe-f155-4672-9694-df7f8cb5b3d6"
+        expirationDate:
+          type: string
+          format: date-time
+          example: "2026-08-15T00:00:00.000Z"
 
-    UpdateProductInput:
+UpdateProductInput:
       type: object
       description: Payload parcial. Todos los campos de CreateProductInput son opcionales aquí.
       properties:

@@ -3,14 +3,29 @@ import { whatsappQueue } from '../queues/wsp.queue';
 
 export const processSale = async (data: any, userId: string, userEmail: string) => {
   return await prisma.$transaction(async (tx) => {
-    // 1. Generar número de factura consecutivo simple (Basado en conteo)
-    const count = await tx.sale.count();
-    const invoiceNumber = `FACT-${String(count + 1).padStart(5, '0')}`;
+    
+    // 1. 🛡️ DETECCIÓN DEL CONSECUTIVO REAL (Seguro y a prueba de borrados/concurrencia)
+    const lastSale = await tx.sale.findFirst({
+      orderBy: { createdAt: 'desc' },
+      select: { invoiceNumber: true }
+    });
+
+    let nextNumber = 1;
+
+    if (lastSale) {
+      const match = lastSale.invoiceNumber.match(/FACT-(\d+)/);
+      if (match) {
+        nextNumber = parseInt(match[1], 10) + 1;
+      }
+    }
+
+    const invoiceNumber = `FACT-${String(nextNumber).padStart(5, '0')}`;
 
     let totalCalculated = 0;
     const itemsToCreate = [];
     const stockUpdates = [];
     const kardexMovements = [];
+    const now = new Date();
 
     // 2. Iterar el carrito para validar reglas de negocio
     for (const item of data.items) {
@@ -23,14 +38,50 @@ export const processSale = async (data: any, userId: string, userEmail: string) 
         throw new Error(`Stock insuficiente para [${product.name}]. Disponibles: ${product.stock}, Solicitados: ${item.quantity}`);
       }
 
-      const itemTotal = Number(product.price) * item.quantity;
+      // --- 🏷️ MOTOR DE DESCUENTOS Y PROMOCIONES EN VIVO ---
+      // Buscamos si el producto o su categoría tienen una promoción activa usando "tx"
+      const discount = await tx.promotion.findFirst({
+        where: {
+          isActive: true,
+          startDate: { lte: now },
+          endDate: { gte: now },
+          OR: [
+            { targetProductId: product.id },
+            { targetCategoryId: product.categoryId },
+            { AND: [{ targetProductId: null }, { targetCategoryId: null }] } // Descuento global
+          ]
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      let unitPrice = Number(product.price);
+
+      if (discount) {
+        if (discount.type === 'PERCENTAGE') {
+          unitPrice = unitPrice - (unitPrice * (Number(discount.value) / 100));
+        } else if (discount.type === 'FIXED_AMOUNT') {
+          unitPrice = Math.max(0, unitPrice - Number(discount.value));
+        } else if (discount.type === 'TWO_FOR_ONE') {
+          // Lógica 2x1: Se cobran grupos de 2 como si fuera 1. 
+          // Calculamos el factor equivalente por unidad para mantener la coherencia del total
+          if (item.quantity >= 2) {
+            const pairs = Math.floor(item.quantity / 2);
+            const remainders = item.quantity % 2;
+            const totalCostForType = (pairs + remainders) * unitPrice;
+            unitPrice = totalCostForType / item.quantity;
+          }
+        }
+      }
+      // ----------------------------------------------------
+
+      const itemTotal = unitPrice * item.quantity;
       totalCalculated += itemTotal;
 
-      // Estructuramos el detalle de la venta
+      // Estructuramos el detalle de la venta guardando el precio con descuento aplicado
       itemsToCreate.push({
         productId: product.id,
         quantity: item.quantity,
-        price: product.price,
+        price: unitPrice, // Guardamos el valor unitario real cobrado
       });
 
       // Estructuramos la rebaja de stock directo en Product
@@ -44,9 +95,9 @@ export const processSale = async (data: any, userId: string, userEmail: string) 
       // Estructuramos la traza para auditoría en el Kárdex
       kardexMovements.push({
         productId: product.id,
-        quantity: -item.quantity, // Negativo porque es salida
+        quantity: -item.quantity,
         type: 'VENTA' as const,
-        reason: `Salida por venta en caja. Documento: ${invoiceNumber}`,
+        reason: `Salida por venta en caja. Documento: ${invoiceNumber}${discount ? ` (Promo: ${discount.name})` : ''}`,
         userId,
         userEmail,
       });

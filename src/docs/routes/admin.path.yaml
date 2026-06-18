@@ -108,3 +108,72 @@
                       $ref: '#/components/schemas/DashboardAnalyticsOutput'
       '500':
         description: Falla en los cálculos o agregados internos del motor PostgreSQL.
+
+/admin/role:
+  get:
+    summary: Ver matriz general de roles y permisos
+    tags:
+      - Panel de Administración
+    responses:
+      '200':
+        description: Listado consolidado devuelto con éxito.
+  post:
+    summary: Dar de alta un nuevo rol operacional vinculando permisos atómicos
+    tags:
+      - Panel de Administración
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - permissions
+            properties:
+              name:
+                type: string
+                example: "SUPERVISOR_TIENDA"
+              description:
+                type: string
+                example: "Gestión intermedia, puede realizar cierres de caja y mermas."
+              permissions:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  example: "a7b1c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+    responses:
+      '201':
+        description: Rol creado y mapeado correctamente en la base de datos.
+
+/admin/permission:
+  get:
+    summary: Ver matriz general de roles y permisos
+    tags:
+      - Panel de Administración
+    responses:
+      '200':
+        description: Listado consolidado devuelto con éxito.
+
+/admin/permission/{id}:
+  put:
+    summary: Actualizar datos de un producto existente
+    tags:
+      - Panel de Administración
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateProductInput'
+    responses:
+      '200':
+        description: Cambios aplicados con éxito.

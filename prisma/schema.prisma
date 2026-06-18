@@ -18,6 +18,7 @@ model User {
   email        String    @unique
   dni          String    @unique
   passwordHash String    @map("password_hash")
+  isActive     Boolean   @default(true)
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
   
@@ -25,6 +26,7 @@ model User {
   roleId       String    @map("role_id")
   role         Role      @relation(fields: [roleId], references: [id])
   auditLogs    AuditLog[]
+  sessions     CashSession[]
 
   @@map("users")
 }
@@ -94,6 +96,7 @@ model Product {
   stock        Int           @default(0)
   minStock     Int           @default(5)        // Umbral mínimo para alertas de reabastecimiento
   isActive     Boolean       @default(true)     // Soft delete para no romper el histórico de ventas
+  expirationDate DateTime?   @map("expiration_date")
   
   // Relaciones
   categoryId   String
@@ -249,3 +252,58 @@ model PurchaseItem {
   @@index([purchaseId])
   @@index([productId])
 }
+
+model CashSession {
+  id             String    @id @default(uuid())
+  userId         String    @map("user_id")
+  openedAt       DateTime  @default(now()) @map("opened_at")
+  closedAt       DateTime? @map("closed_at")
+  status         String    @default("OPEN") // OPEN, CLOSED
+  
+  initialBalance Decimal   @db.Decimal(12, 2) @map("initial_balance")
+  expectedBalance Decimal  @default(0.00) @db.Decimal(12, 2) @map("expected_balance") // Suma automática (inicial + ventas efectivo)
+  actualBalance  Decimal?  @db.Decimal(12, 2) @map("actual_balance")   // Lo que el cajero contó físicamente al cerrar
+  difference     Decimal?  @db.Decimal(12, 2) // expectedBalance - actualBalance (Sobrante o Faltante)
+  
+  notes          String?   @db.Text
+
+  // Relación con el usuario que opera la caja
+  user           User      @relation(fields: [userId], references: [id])
+
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([status])
+  @@map("cash_sessions")
+}
+
+enum PromotionType {
+  PERCENTAGE
+  FIXED_AMOUNT
+  TWO_FOR_ONE
+}
+
+model Promotion {
+  id          String        @id @default(uuid())
+  name        String        // Ej: "Black Friday Lácteos" o "Promo Fin de Semana"
+  description String?       @db.Text
+  type        PromotionType // ENUM: PERCENTAGE, FIXED_AMOUNT, TWO_FOR_ONE
+  value       Decimal       @db.Decimal(12, 2) @default(0.00) // 10.00 para %, 5000 para monto fijo
+  
+  // Condicionales de activación
+  startDate   DateTime      @map("start_date")
+  endDate     DateTime      @map("end_date")
+  isActive    Boolean       @default(true) @map("is_active")
+
+  // Alcance del descuento (Opcionales: si se dejan nulos, aplica a todo el POS)
+  targetCategoryId String?   @map("target_category_id")
+  targetProductId  String?   @map("target_product_id")
+
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@map("promotions")
+}
+
+ 

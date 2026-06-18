@@ -1,0 +1,72 @@
+/module/user:
+  post:
+    summary: Registrar un nuevo operador/usuario en el sistema POS
+    description: Registra las credenciales base, cifra el password usando Bcrypt y asigna los roles operativos del negocio.
+    tags:
+      - Modulo de Usuarios
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateUserInput'
+    responses:
+      '201':
+        description: Cuenta de usuario desplegada con éxito.
+  get:
+    summary: Listar operadores activos del sistema
+    tags:
+      - Modulo de Usuarios
+    parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        schema:
+          type: integer
+      - name: search
+        in: query
+        description: Filtrar por coincidencia en username o email
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Consulta exitosa.
+
+/module/user/{id}:
+  put:
+    summary: Modificar datos o credenciales de un usuario
+    tags:
+      - Modulo de Usuarios
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateUserInput'
+    responses:
+      '200':
+        description: Cambios aplicados en el perfil.
+  delete:
+    summary: Desactivación inmediata de una cuenta (Revocación de accesos)
+    tags:
+      - Modulo de Usuarios
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Operador inhabilitado para iniciar sesión.

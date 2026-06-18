@@ -1,0 +1,44 @@
+/module/merma:
+  post:
+    summary: Registrar un ajuste manual de stock o una merma por pérdida
+    description: Modifica directamente las existencias de un artículo en el almacén sin pasar por caja o proveedor, dejando registro en el Kardex.
+    tags:
+      - Control de Inventario y Mermas
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - productId
+              - quantity
+              - type
+              - reason
+            properties:
+              productId:
+                type: string
+                format: uuid
+              quantity:
+                type: integer
+                description: Un número negativo resta stock (ej. -5 por merma). Uno positivo suma.
+                example: -3
+              type:
+                type: string
+                enum: [AJUSTE_INVENTARIO, MERMA]
+                example: "MERMA"
+              reason:
+                type: string
+                example: "3 unidades de lácteos rotas / vencidas en pasillo 2."
+    responses:
+      '201':
+        description: Ajuste impactado correctamente.
+
+/module/merma/expired-alerts:
+  get:
+    summary: Listar productos que ya alcanzaron o superaron su fecha de vencimiento
+    tags:
+      - Control de Inventario y Mermas
+    responses:
+      '200':
+        description: Listado de alertas devuelto con éxito.
