@@ -1,4 +1,3 @@
-// src/queues/whatsapp.queue.ts
 import { Queue } from 'bullmq';
 import { queueConnection } from '../config/queue.config';
 

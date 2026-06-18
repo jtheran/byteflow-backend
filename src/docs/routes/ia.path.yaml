@@ -1,0 +1,31 @@
+/module/ai/chat-rag:
+  post:
+    summary: Interactuar con el asistente analítico de IA mediante RAG
+    tags:
+      - Modulo de IA
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                description: Consulta semántica del administrador sobre los datos del POS
+                example: "¿Cuáles son los 3 productos con menos existencias en inventario?"
+    responses:
+      '200':
+        description: Consulta procesada exitosamente utilizando el contexto vectorial de Qdrant.
+
+/module/ai/sync-vectors:
+  post:
+    summary: Sincronizar la base de datos relacional con la base de datos vectorial (Qdrant)
+    description: Transforma los modelos transaccionales de la base de datos principal en embeddings de texto y los indexa en Qdrant.
+    tags:
+      - Modulo de IA
+    responses:
+      '200':
+        description: Modelos relacionales transformados y guardados en Qdrant con éxito.

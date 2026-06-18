@@ -1,8 +1,6 @@
 // src/services/auth.service.ts
 import prisma from '../config/db.config';
 import * as bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import config from '../config/config';
 import { 
   generateAccessToken, 
   generateRefreshToken

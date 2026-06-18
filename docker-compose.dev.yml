@@ -51,10 +51,23 @@ services:
     networks:
       - byteforge-network
 
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: byteforge-vectores
+    ports:
+      - "6336:6333"
+      - "6364:6334"
+    volumes:
+      - qdrant_data:/qdrant/data
+    restart: unless-stopped
+    networks:
+      - byteforge-network
+
 volumes:
   postgres_data:
   redis_data:
   mailpit_data:
+  qdrant_data:
 
 networks:
   byteforge-network:

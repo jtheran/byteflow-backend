@@ -10,6 +10,7 @@ import userRoutes from './user.route';
 import sessionRoutes from './session.route';
 import mermaRoutes from './merma.route';
 import promotionRoutes from './promotion.route';
+import aiRoutes from './ia.route';
 
 const rootInit = Router();
 
@@ -23,5 +24,6 @@ rootInit.use('/user', userRoutes);
 rootInit.use('/session', sessionRoutes);
 rootInit.use('/merma', mermaRoutes);
 rootInit.use('/promotion', promotionRoutes);
+rootInit.use('/ai', aiRoutes);
 
 export default rootInit;
